@@ -160,17 +160,19 @@ public class Storage implements Serializable {
 
     public HashMap<Integer, Animal> getAllAlivePredators() {
         HashMap<Integer, Animal> alivePredators = new HashMap<Integer, Animal>();
+        int counterP = 0;
         for (Predator pr : predators.values())
-            if (pr.isAlive()) alivePredators.put(pr.getId(), pr);
-
+        {
+            if (pr.isAlive()) alivePredators.put(counterP++, pr);
+        }
         return alivePredators;
     }
 
     public HashMap<Integer, Animal> getAllAliveHerbivores() {
         HashMap<Integer, Animal> aliveHerbivores = new HashMap<Integer, Animal>();
+        int counterH = 0;
         for (Herbivore hr : herbivores.values())
-            if (hr.isAlive()) aliveHerbivores.put(hr.getId(), hr);
-
+            if (hr.isAlive()) aliveHerbivores.put(counterH++, hr);
         return aliveHerbivores;
     }
 
