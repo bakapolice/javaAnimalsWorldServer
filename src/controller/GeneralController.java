@@ -68,7 +68,8 @@ public class GeneralController {
     //---------------------------------------------------------------
 
     public static String[] loadData(int selection){
-        return DataManager.loadData(selection);
+        //return DataManager.loadData(selection);
+        return new String[0];
     }
 
     public static void save(){

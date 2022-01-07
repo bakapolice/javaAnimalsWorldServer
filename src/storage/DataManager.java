@@ -5,6 +5,7 @@ import model.Animal;
 import model.Grass;
 import model.Herbivore;
 import model.Predator;
+import org.json.JSONObject;
 
 import java.awt.*;
 import java.util.Scanner;
@@ -121,55 +122,56 @@ public class DataManager {
     }
     //---------------------------------------------------------------
 
-    public static String[] loadData(int selection) {
+    public static JSONObject loadData(int selection) {
         switch (selection) {
             case ALL_ANIMALS -> {
-                String[] data = new String[storage.getAllAnimals().size()];
-                int counter = 0;
+                JSONObject data = new JSONObject();
+                int i = 0;
                 for (Animal animal : storage.getAllAnimals())
-                    data[counter++] = animal.getShortInfo();
+                    data.put(String.valueOf(i++),animal.getShortInfo());
                 return data;
             }
             case ALL_ALIVE_ANIMALS -> {
-                String[] data = new String[storage.getAllAliveAnimals().size()];
-                int counter = 0;
+                JSONObject data = new JSONObject();
+                int i = 0;
                 for (Animal animal : storage.getAllAliveAnimals())
-                    data[counter++] = animal.getShortInfo();
+                    data.put(String.valueOf(i++),animal.getShortInfo());
                 return data;
             }
             case ALL_HERBIVORES -> {
-                String[] data = new String[storage.getAllHerbivores().size()];
-                int counter = 0;
+                JSONObject data = new JSONObject();
+                int i = 0;
                 for (Animal animal : storage.getAllHerbivores().values())
-                    data[counter++] = animal.getShortInfo();
+                    data.put(String.valueOf(animal.getId()),animal.getShortInfo());
                 return data;
             }
             case ALL_PREDATORS -> {
-                String[] data = new String[storage.getAllPredators().size()];
-                int counter = 0;
+                JSONObject data = new JSONObject();
+                int i = 0;
                 for (Animal animal : storage.getAllPredators().values())
-                    data[counter++] = animal.getShortInfo();
+                    data.put(String.valueOf(animal.getId()),animal.getShortInfo());
                 return data;
+
             }
             case ALL_ALIVE_HERBIVORES -> {
-                String[] data = new String[storage.getAllAliveHerbivores().size()];
-                int counter = 0;
+                JSONObject data = new JSONObject();
+                int i = 0;
                 for (Animal animal : storage.getAllAliveHerbivores().values())
-                    data[counter++] = animal.getShortInfo();
+                    data.put(String.valueOf(animal.getId()),animal.getShortInfo());
                 return data;
+
             }
             case ALL_ALIVE_PREDATORS -> {
-                String[] data = new String[storage.getAllAlivePredators().size()];
-                int counter = 0;
+                JSONObject data = new JSONObject();
+                int i = 0;
                 for (Animal animal : storage.getAllAlivePredators().values())
-                    data[counter++] = animal.getShortInfo();
+                    data.put(String.valueOf(animal.getId()),animal.getShortInfo());
                 return data;
             }
             case ALL_FOOD -> {
-                String[] data = new String[storage.getAllGrasses().size()];
-                int counter = 0;
+                JSONObject data = new JSONObject();
                 for (Grass grass : storage.getAllGrasses().values())
-                    data[counter++] = grass.getShortInfo();
+                    data.put(String.valueOf(grass.getId()),grass.getShortInfo());
                 return data;
             }
             default -> throw new IllegalArgumentException("Неверный пункт меню!");

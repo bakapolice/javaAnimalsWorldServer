@@ -82,13 +82,11 @@ public class NetController {
         jsonResponse.put("message", message);
     }
 
-    private static void createJsonResponse(int command, int selection, String[] data) {
+    private static void createJsonResponse(int command, int selection, JSONObject data) {
         jsonResponse = new JSONObject();
-        for (String str : data) {
-            int counter = 0;
-            jsonResponse.put(String.valueOf(counter++), data);
-        }
-        jsonResponse.toString();
+        jsonResponse.put("request_type", command);
+        jsonResponse.put("selection_id", selection);
+        jsonResponse.put("data", data);
     }
 
     // На стороне сервера
@@ -102,10 +100,10 @@ public class NetController {
                     DataManager.createHerbivore(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
                 }
                 if (jsonRequest.getString("creature_type").equals("Predator")) {
-                    DataManager.createHerbivore(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
+                    DataManager.createPredator(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
                 }
                 if (jsonRequest.getString("creature_type").equals("Grass")) {
-                    DataManager.createHerbivore(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
+                    DataManager.createGrass(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
                 }
                 String message = "Создано: + " + jsonRequest.getString("creature_type") + jsonRequest.getString("name") + (float) jsonRequest.getDouble("weigh");
                 createJsonResponse(jsonRequest.getInt("request_type"), message);
@@ -125,7 +123,7 @@ public class NetController {
                     DataManager.feedHerbivore(jsonRequest.getInt("selection_id"), jsonRequest.getInt("food_id"), jsonRequest.getBoolean("is_form"));
                 }
                 if (jsonRequest.getString("creature_type").equals("Predator")) {
-                    DataManager.feedHerbivore(jsonRequest.getInt("selection_id"), jsonRequest.getInt("food_id"), jsonRequest.getBoolean("is_form"));
+                    DataManager.feedPredator(jsonRequest.getInt("selection_id"), jsonRequest.getInt("food_id"), jsonRequest.getBoolean("is_form"));
                 }
                 String message = "Убит: + " + jsonRequest.getString("creature_type");
                 createJsonResponse(jsonRequest.getInt("request_type"), message);
@@ -134,7 +132,10 @@ public class NetController {
                 String message = DataManager.print(jsonRequest.getInt("selection_id"));
                 createJsonResponse(jsonRequest.getInt("request_type"), message);
             }
-            case REQUEST_TYPE_LOAD -> createJsonResponse(jsonRequest.getInt("request_type"), jsonRequest.getInt("selection_id"), DataManager.loadData(jsonRequest.getInt("selection_id")));
+            case REQUEST_TYPE_LOAD -> {
+                DataManager.loadData(jsonRequest.getInt("selection_id"));
+                createJsonResponse(jsonRequest.getInt("request_type"), jsonRequest.getInt("selection_id"), DataManager.loadData(jsonRequest.getInt("selection_id")));
+            }
         }
     }
 
