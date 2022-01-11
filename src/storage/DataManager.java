@@ -26,71 +26,103 @@ public class DataManager {
     }
 
     // Создание -----------------------------------------------------
-    public static void createPredator(String name, Float weigh) {
-        storage.create(new Predator(name, weigh));
+    public static Predator createPredator(String name, Float weigh) {
+       return storage.create(new Predator(name, weigh));
     }
 
-    public static void createHerbivore(String name, Float weigh) {
-        storage.create(new Herbivore(name, weigh));
+    public static Herbivore createHerbivore(String name, Float weigh) {
+        return storage.create(new Herbivore(name, weigh));
     }
 
-    public static void createGrass(String name, Float weigh) {
-        storage.create(new Grass(name, weigh));
+    public static Grass createGrass(String name, Float weigh) {
+        return storage.create(new Grass(name, weigh));
     }
     //---------------------------------------------------------------
 
 
     //Убить ---------------------------------------------------------
 
-    public static void killHerbivore(int selection, boolean form) {
-        if (form) selection = storage.getAllAliveHerbivores().get(selection).getId();
-
-        Herbivore herbivore = storage.findHerbivoreById(selection);
+    public static String killHerbivore(int selection, boolean form) {
+        Herbivore herbivore;
+        if (form) {
+            herbivore = (Herbivore) storage.getAllAliveHerbivores().get(selection);
+            if(herbivore == null) return "Ошибка. Такое животное не найдено!";
+            selection = herbivore.getId();
+        }
+        herbivore = storage.findHerbivoreById(selection);
         //Убить травоядное
-        herbivore.die();
+        if(herbivore == null) return  "Ошибка. Такое животное не найдено!";
+            herbivore.die();
         //Обновить статус в хранилище на "Убит"
-        storage.update(herbivore);
+        if(storage.update(herbivore) == null) return  "Ошибка. Не удалось обновить состояние животного в хранилище.!";
+        return "Статус животного обновлен успешно! " + storage.findHerbivoreById(selection).getShortInfo();
     }
 
-    public static void killPredator(int selection, boolean form) {
-        if (form) selection = storage.getAllAlivePredators().get(selection).getId();
-
-        Predator predator = storage.findPredatorById(selection);
+    public static String killPredator(int selection, boolean form) {
+        Predator predator;
+        if (form) {
+            predator = (Predator) storage.getAllAlivePredators().get(selection);
+            if(predator == null) return "Ошибка. Такое животное не найдено!";
+            selection = predator.getId();
+            selection = storage.getAllAlivePredators().get(selection).getId();
+        }
+        predator = storage.findPredatorById(selection);
+        if(predator == null) return  "Ошибка. Такое животное не найдено!";
         //Убить хищника
         predator.die();
         //Обновить статус в хранилище на "Убит"
-        storage.update(predator);
+        if(storage.update(predator) == null) return  "Ошибка. Не удалось обновить состояние животного в хранилище.!";
+        return "Статус животного обновлен успешно! " + storage.findPredatorById(selection).getShortInfo();
     }
     //---------------------------------------------------------------
 
     //Покормить -----------------------------------------------------
-    public static void feedHerbivore(int selection, int foodID, boolean form) {
-        if (form) selection = storage.getAllAliveHerbivores().get(selection).getId();
-
-        Herbivore herbivore = storage.findHerbivoreById(selection);
+    public static String feedHerbivore(int selection, int foodID, boolean form) {
+        Herbivore herbivore;
+        if (form) {
+            herbivore = (Herbivore) storage.getAllAliveHerbivores().get(selection);
+            if(herbivore == null) return "Ошибка. Такое животное не найдено!";
+            selection = herbivore.getId();
+        }
+        herbivore = storage.findHerbivoreById(selection);
         Grass grass = storage.findGrassById(foodID);
+        if(grass == null) return "Ошибка! Такая еда не найдена!";
         //Покормить
         herbivore.eat(grass);
         //Обновить данные
-        storage.update(herbivore);
-        storage.update(grass);
-
+        if(storage.update(herbivore) == null) return "Ошибка. Не удалось обновить состояние животного в хранилище!";
+        if(storage.update(grass) == null) return "Ошибка. Не удалось обновить состояние животного в хранилище!";
+        return "Статус животного обновлен успешно! " + storage.findPredatorById(selection).getShortInfo();
     }
 
-    public static void feedPredator(int selection, int foodID, boolean form) {
+    public static String feedPredator(int selection, int foodID, boolean form) {
+        Predator predator;
+        Herbivore herbivore;
         if (form) {
-            selection = storage.getAllAlivePredators().get(selection).getId();
-            foodID = storage.getAllAliveHerbivores().get(foodID).getId();
-        }
-        Predator predator = storage.findPredatorById(selection);
-        Herbivore herbivore = storage.findHerbivoreById(foodID);
-        //Покормить
-        predator.eat(herbivore);
-        //Обновить данные
-        storage.update(predator);
-        storage.update(herbivore);
-    }
+            predator = (Predator) storage.getAllAlivePredators().get(selection);
+            if(predator == null) return "Ошибка. Такой хищник не найден!";
 
+            herbivore = (Herbivore) storage.getAllAliveHerbivores().get(foodID);
+            if(herbivore == null) return "Ошибка. Такое травоядное не найдено!";
+
+            selection = predator.getId();
+            foodID = herbivore.getId();
+        }
+        predator = storage.findPredatorById(selection);
+        if(predator == null) return "Ошибка. Такой хищник не найден!";
+
+        herbivore = storage.findHerbivoreById(foodID);
+        if(herbivore == null) return "Ошибка. Такое травоядное не найдено!";
+
+        //Покормить
+        boolean hunt = predator.eat(herbivore);
+        //Обновить данные
+        if(storage.update(predator) == null) return "Ошибка. Не удалось обновить состояние животного в хранилище!";
+        if(storage.update(herbivore) == null) return "Ошибка. Не удалось обновить состояние животного в хранилище!";
+
+        if(!hunt) return "Хищнику не удалось поймать добычу!";
+        return "Охота прошла успешно! Хищник поймал добычу";
+    }
     //---------------------------------------------------------------
 
     //Вывести -------------------------------------------------------
@@ -177,40 +209,6 @@ public class DataManager {
             default -> throw new IllegalArgumentException("Неверный пункт меню!");
         }
     }
-
-//    public static void loadData(Choice choice, int selection) {
-//        switch (selection) {
-//            case ALL_ANIMALS -> {
-//                for (Animal animal : storage.getAllAnimals())
-//                    choice.add(animal.getShortInfo());
-//            }
-//            case ALL_ALIVE_ANIMALS -> {
-//                for (Animal animal : storage.getAllAliveAnimals())
-//                    choice.add(animal.getShortInfo());
-//            }
-//            case ALL_HERBIVORES -> {
-//                for (Animal animal : storage.getAllHerbivores().values())
-//                    choice.add(animal.getShortInfo());
-//            }
-//            case ALL_PREDATORS -> {
-//                for (Animal animal : storage.getAllPredators().values())
-//                    choice.add(animal.getShortInfo());
-//            }
-//            case ALL_ALIVE_HERBIVORES -> {
-//                for (Animal animal : storage.getAllAliveHerbivores().values())
-//                    choice.add(animal.getShortInfo());
-//            }
-//            case ALL_ALIVE_PREDATORS -> {
-//                for (Animal animal : storage.getAllAlivePredators().values())
-//                    choice.add(animal.getShortInfo());
-//            }
-//            case ALL_FOOD -> {
-//                for (Grass grass : storage.getAllGrasses().values())
-//                    choice.add(grass.getShortInfo());
-//            }
-//            default -> throw new IllegalArgumentException("Неверный пункт меню!");
-//        }
-//    }
 
     public static void save() {
         storage.save();

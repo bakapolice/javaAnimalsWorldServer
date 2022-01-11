@@ -3,6 +3,9 @@ package controller;
 
 import Server.Server;
 import controller.Listener.ServerListener;
+import model.Grass;
+import model.Herbivore;
+import model.Predator;
 import org.json.JSONObject;
 import storage.DataManager;
 import view.*;
@@ -38,7 +41,7 @@ public class NetController {
             server.stopServer();
             return true;
         } catch (Exception ex) {
-            //sf.getTfLog().setText(ex.getMessage());
+            serverForm.getTfLog().setText(ex.getMessage());
             return false;
         }
     }
@@ -50,7 +53,7 @@ public class NetController {
             GeneralController.save();
             return true;
         } catch (Exception ex) {
-            //sf.getTfLog().setText(ex.getMessage());
+            serverForm.getTfLog().setText(ex.getMessage());
             return false;
         }
     }
@@ -60,6 +63,7 @@ public class NetController {
             server = new Server();
             serverForm = new ServerForm();
             serverListener = new ServerListener(serverForm);
+            createJsonResponse(-1, "null");
         } catch (Exception ex) {
             serverForm.getTfLog().setText(ex.getMessage());
         }
@@ -92,50 +96,55 @@ public class NetController {
     // На стороне сервера
     public static void getResponseFromServer(JSONObject jsonRequest) {
         switch (jsonRequest.getInt("request_type")) {
-            case REQUEST_TYPE_CONNECT -> {
-                createJsonResponse(REQUEST_TYPE_CONNECT, "Connected");
-            }
+            case REQUEST_TYPE_CONNECT -> createJsonResponse(REQUEST_TYPE_CONNECT, "Connected");
+
             case REQUEST_TYPE_CREATE -> {
+                String message = null;
                 if (jsonRequest.getString("creature_type").equals("Herbivore")) {
-                    DataManager.createHerbivore(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
+                    Herbivore herbivore = DataManager.createHerbivore(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
+                    if (herbivore == null)
+                        message = "Ошибка создания";
+                    else message = "Создан: " + herbivore.getShortInfo();
                 }
                 if (jsonRequest.getString("creature_type").equals("Predator")) {
-                    DataManager.createPredator(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
+                    Predator predator = DataManager.createPredator(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
+                    if (predator == null)
+                        message = "Ошибка создания!";
+                    else message = "Создан: " + predator.getShortInfo();
                 }
                 if (jsonRequest.getString("creature_type").equals("Grass")) {
-                    DataManager.createGrass(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
+                    Grass grass = DataManager.createGrass(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
+                    if (grass == null)
+                        message = "Ошибка создания";
+                    else message = "Создан: " + grass.getShortInfo();
                 }
-                String message = "Создано: + " + jsonRequest.getString("creature_type") + jsonRequest.getString("name") + (float) jsonRequest.getDouble("weigh");
                 createJsonResponse(jsonRequest.getInt("request_type"), message);
             }
             case REQUEST_TYPE_KILL -> {
+                String message = null;
                 if (jsonRequest.getString("creature_type").equals("Herbivore")) {
-                    DataManager.killHerbivore(jsonRequest.getInt("selection_id"), jsonRequest.getBoolean("is_form"));
+                    message = DataManager.killHerbivore(jsonRequest.getInt("selection_id"), jsonRequest.getBoolean("is_form"));
                 }
                 if (jsonRequest.getString("creature_type").equals("Predator")) {
-                    DataManager.killPredator(jsonRequest.getInt("selection_id"), jsonRequest.getBoolean("is_form"));
+                    message = DataManager.killPredator(jsonRequest.getInt("selection_id"), jsonRequest.getBoolean("is_form"));
                 }
-                String message = "Убит: + " + jsonRequest.getString("creature_type");
                 createJsonResponse(jsonRequest.getInt("request_type"), message);
             }
             case REQUEST_TYPE_FEED -> {
+                String message = null;
                 if (jsonRequest.getString("creature_type").equals("Herbivore")) {
-                    DataManager.feedHerbivore(jsonRequest.getInt("selection_id"), jsonRequest.getInt("food_id"), jsonRequest.getBoolean("is_form"));
+                    message = DataManager.feedHerbivore(jsonRequest.getInt("selection_id"), jsonRequest.getInt("food_id"), jsonRequest.getBoolean("is_form"));
                 }
                 if (jsonRequest.getString("creature_type").equals("Predator")) {
-                    DataManager.feedPredator(jsonRequest.getInt("selection_id"), jsonRequest.getInt("food_id"), jsonRequest.getBoolean("is_form"));
+                    message = DataManager.feedPredator(jsonRequest.getInt("selection_id"), jsonRequest.getInt("food_id"), jsonRequest.getBoolean("is_form"));
                 }
-                String message = "Убит: + " + jsonRequest.getString("creature_type");
                 createJsonResponse(jsonRequest.getInt("request_type"), message);
             }
             case REQUEST_TYPE_PRINT -> {
                 String message = DataManager.print(jsonRequest.getInt("selection_id"));
                 createJsonResponse(jsonRequest.getInt("request_type"), message);
             }
-            case REQUEST_TYPE_LOAD -> {
-                DataManager.loadData(jsonRequest.getInt("selection_id"));
-                createJsonResponse(jsonRequest.getInt("request_type"), jsonRequest.getInt("selection_id"), DataManager.loadData(jsonRequest.getInt("selection_id")));
-            }
+            case REQUEST_TYPE_LOAD -> createJsonResponse(jsonRequest.getInt("request_type"), jsonRequest.getInt("selection_id"), DataManager.loadData(jsonRequest.getInt("selection_id")));
         }
     }
 

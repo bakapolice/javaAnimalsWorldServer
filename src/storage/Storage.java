@@ -89,19 +89,16 @@ public class Storage implements Serializable {
         return grass;
     }
 
-    public void update(Predator predator) {
-        if (predators.replace(predator.getId(), predator) == null)
-            throw new IllegalArgumentException("Нечего обновлять!");
+    public Predator update(Predator predator) {
+        return predators.replace(predator.getId(), predator);
     }
 
-    public void update(Herbivore herbivore) {
-        if (herbivores.replace(herbivore.getId(), herbivore) == null)
-            throw new IllegalArgumentException("Нечего обновлять!");
+    public Herbivore update(Herbivore herbivore) {
+        return herbivores.replace(herbivore.getId(), herbivore);
     }
 
-    public void update(Grass grass) {
-        if (grasses.replace(grass.getId(), grass) == null)
-            throw new IllegalArgumentException("Нечего обновлять!");
+    public Grass update(Grass grass) {
+        return grasses.replace(grass.getId(), grass);
     }
 
     public void remove(Predator predator) {
@@ -111,12 +108,12 @@ public class Storage implements Serializable {
 
     public void remove(Herbivore herbivore) {
         if (herbivores.remove(herbivore.getId()) == null)
-            throw new IllegalArgumentException("Нечего обновлять!");
+            throw new IllegalArgumentException("Нечего удалять!");
     }
 
     public void remove(Grass grass) {
         if (grasses.remove(grass.getId()) == null)
-            throw new IllegalArgumentException("Нечего обновлять!");
+            throw new IllegalArgumentException("Нечего удалять!");
     }
 
     public ArrayList<Animal> getAllAnimals() {

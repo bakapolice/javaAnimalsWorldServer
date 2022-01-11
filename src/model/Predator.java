@@ -16,7 +16,7 @@ public class Predator extends Animal{
     }
 
     @Override
-    public void eat(Food food) {
+    public boolean eat(Food food) {
         if (!this.isAlive)
             throw new AttemptToFeedDeadAnimal();
 
@@ -29,13 +29,14 @@ public class Predator extends Animal{
 
         if(!hunt(food)) {
             System.out.println("Хищнику не удалось поймать добычу!");
-            return;
+            return false;
         }
 
         herbivore.die();
         this.weight += herbivore.weight;
         herbivore.weight -= 2.0F;
         System.out.println("Охота прошла успешно!");
+        return true;
     }
 
     private boolean hunt(Food food) {

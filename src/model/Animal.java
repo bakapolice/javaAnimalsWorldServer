@@ -34,7 +34,7 @@ public abstract class Animal implements Serializable {
         this.isAlive = false;
     }
 
-    public abstract void eat(Food food);
+    public abstract boolean eat(Food food);
 
     public String getInfo() {
         return "id = " + id

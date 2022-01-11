@@ -19,7 +19,6 @@ public class ServerThread implements Runnable {
     @Override
     public void run() {
         try {
-            System.out.println("Сервер запущен");
             NetController.createJsonResponse(-1, "null");
             NetController.getResponseFromServer(NetController.getJsonResponse());
             while (socket.isConnected()) {
@@ -35,7 +34,6 @@ public class ServerThread implements Runnable {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-
     }
 
     public Socket getSocket() {

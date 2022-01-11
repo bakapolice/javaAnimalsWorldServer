@@ -14,7 +14,7 @@ public class Herbivore extends Animal implements Food{
     }
 
     @Override
-    public void eat(Food food) {
+    public boolean eat(Food food) {
         if(!this.isAlive)
             throw new AttemptToFeedDeadAnimal();
             //System.out.println("Травоядное мертво!");
@@ -27,5 +27,6 @@ public class Herbivore extends Animal implements Food{
 
         this.weight += 0.5F;
         ((Grass)food).weight -= 0.5F;
+        return true;
     }
 }
