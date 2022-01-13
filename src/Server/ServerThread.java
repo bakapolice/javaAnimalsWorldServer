@@ -22,8 +22,8 @@ public class ServerThread implements Runnable {
         try {
             NetController.createJsonResponse(-1, "null");
             NetController.getResponseFromServer(NetController.getJsonResponse());
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
             while (socket.isConnected()) {
-                objectInputStream = new ObjectInputStream(socket.getInputStream());
                 requestFromClient = objectInputStream.readObject().toString();
 
                 NetController.getResponseFromServer(new JSONObject(requestFromClient));

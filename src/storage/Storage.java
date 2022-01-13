@@ -227,6 +227,7 @@ public class Storage implements Serializable {
             saveFile.writeObject(uniqueInstance);
             saveFile.close();
             dataFile.close();
+            System.out.println("Данные успешно сохранены в хранилище");
             return Resources.rb.getString("MESSAGE_SAVE");
             }
         catch (IOException ex)

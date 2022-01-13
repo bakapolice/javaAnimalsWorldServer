@@ -49,21 +49,19 @@ public class NetController {
         }
     }
 
-    public static boolean exitServer() {
+    public static void exitServer() {
         try {
-            if (server.isStarted())
+            if (server!= null && server.isStarted())
                 server.stopServer();
             GeneralController.save();
-            return true;
         } catch (Exception ex) {
             serverForm.getTfLog().setText(ex.getMessage());
-            return false;
+            //serverForm.getTfLog().setText("Сервер не существует или отсутствуют разрешения.");
         }
     }
 
     public static void startApp() {
         try {
-            //server = new Server();
             serverForm = new ServerForm();
             serverListener = new ServerListener(serverForm);
             createJsonResponse(-1, "null");
