@@ -10,7 +10,6 @@ public class Main {
             System.out.println(Resources.rb.getString("MESSAGE_SETUP_ERROR"));
         }
     }
-
 }
 
 

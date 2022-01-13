@@ -11,7 +11,8 @@ public class ServerThread implements Runnable {
     private Socket socket = null;
     private ObjectOutputStream objectOutputStream;
     private ObjectInputStream objectInputStream;
-
+    String requestFromClient;
+    String serverResponse;
     public ServerThread(Socket socket) {
         this.socket = socket;
     }
@@ -23,14 +24,15 @@ public class ServerThread implements Runnable {
             NetController.getResponseFromServer(NetController.getJsonResponse());
             while (socket.isConnected()) {
                 objectInputStream = new ObjectInputStream(socket.getInputStream());
-                String requestFromClient = objectInputStream.readObject().toString();
+                requestFromClient = objectInputStream.readObject().toString();
 
                 NetController.getResponseFromServer(new JSONObject(requestFromClient));
 
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                String serverResponse = NetController.getJsonResponse().toString();
+                serverResponse = NetController.getJsonResponse().toString();
                 objectOutputStream.writeObject(serverResponse);
             }
+            System.out.println("Socket closed");
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -38,6 +40,14 @@ public class ServerThread implements Runnable {
 
     public Socket getSocket() {
         return socket;
+    }
+
+    public ObjectOutputStream getObjectOutputStream() {
+        return objectOutputStream;
+    }
+
+    public ObjectInputStream getObjectInputStream() {
+        return objectInputStream;
     }
 
     public void setSocket(Socket socket) {

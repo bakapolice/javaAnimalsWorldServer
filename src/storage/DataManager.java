@@ -64,7 +64,6 @@ public class DataManager {
             predator = (Predator) storage.getAllAlivePredators().get(selection);
             if(predator == null) return "Ошибка. Такое животное не найдено!";
             selection = predator.getId();
-            selection = storage.getAllAlivePredators().get(selection).getId();
         }
         predator = storage.findPredatorById(selection);
         if(predator == null) return  "Ошибка. Такое животное не найдено!";
@@ -210,8 +209,8 @@ public class DataManager {
         }
     }
 
-    public static void save() {
-        storage.save();
+    public static String save() {
+        return storage.save();
     }
 
 }

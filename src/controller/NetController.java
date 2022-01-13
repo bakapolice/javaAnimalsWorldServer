@@ -22,6 +22,7 @@ public class NetController {
     public static final int REQUEST_TYPE_FEED = 3;
     public static final int REQUEST_TYPE_PRINT = 4;
     public static final int REQUEST_TYPE_LOAD = 5;
+    public static final int REQUEST_TYPE_SAVE = 6;
 
     private static JSONObject jsonRequest;
     private static JSONObject jsonResponse;
@@ -29,7 +30,9 @@ public class NetController {
 
     public static void startServer(int port) throws Exception {
         try {
-            server.startServer(port);
+            server = new Server();
+            server.setPort(port);
+            new Thread(server).start();
         } catch (Exception ex) {
             serverForm.getTfLog().setText(ex.getMessage());
             throw new Exception("Ошибка запуска сервера на порту " + port);
@@ -60,7 +63,7 @@ public class NetController {
 
     public static void startApp() {
         try {
-            server = new Server();
+            //server = new Server();
             serverForm = new ServerForm();
             serverListener = new ServerListener(serverForm);
             createJsonResponse(-1, "null");
@@ -145,6 +148,7 @@ public class NetController {
                 createJsonResponse(jsonRequest.getInt("request_type"), message);
             }
             case REQUEST_TYPE_LOAD -> createJsonResponse(jsonRequest.getInt("request_type"), jsonRequest.getInt("selection_id"), DataManager.loadData(jsonRequest.getInt("selection_id")));
+            case REQUEST_TYPE_SAVE -> createJsonResponse(jsonRequest.getInt("request_type"), DataManager.save());
         }
     }
 

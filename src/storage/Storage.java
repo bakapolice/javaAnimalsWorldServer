@@ -220,18 +220,19 @@ public class Storage implements Serializable {
         return aliveHerbivores;
     }
 
-    public void save(){
+    public String save(){
         try{
             FileOutputStream dataFile = new FileOutputStream(filenameAnimals);
             ObjectOutputStream saveFile = new ObjectOutputStream(dataFile);
             saveFile.writeObject(uniqueInstance);
             saveFile.close();
             dataFile.close();
-            System.out.println(Resources.rb.getString("MESSAGE_SAVE"));
+            return Resources.rb.getString("MESSAGE_SAVE");
             }
         catch (IOException ex)
         {
             ex.printStackTrace();
+            return "Ошибка сохранения!";
         }
     }
 
