@@ -18,7 +18,7 @@ public class ServerForm extends Frame {
         labelPort = new Label(Resources.rb.getString("LABEL_PORT"));
         labelPort.setBounds(30, 61, 85, 30);
         this.add(labelPort);
-        textFieldPort = new TextField("5050");
+        textFieldPort = new TextField(Resources.port);
         textFieldPort.setBounds(157,61, 213, 30);
         textFieldPort.setEnabled(true);
         this.add(textFieldPort);

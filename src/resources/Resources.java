@@ -17,6 +17,7 @@ public class Resources {
     public static int initialise;
     public static Locale locale = Locale.getDefault();
     public static ResourceBundle rb;
+    public static int port;
 
     public static void setLocale(String language){
         locale = new Locale(language);
@@ -36,6 +37,7 @@ public class Resources {
             }
             setLocale(properties.getProperty("language"));
             initialise = Integer.parseInt(properties.getProperty("storage.load"));
+            port = Integer.parseInt(properties.getProperty("port"));
         } catch (IOException ex) {
             ex.printStackTrace();
             System.err.println("Ошибка! Файл с настройками не найден!\nError! Resources file didn't find!");
