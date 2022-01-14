@@ -30,16 +30,18 @@ public class Storage implements Serializable {
 
 
     private Storage(int initialise) {
-        switch (initialise){
+        switch (initialise) {
             case MODE_DEFAULT_INIT -> defaultInit();
-            case MODE_EMPTY_INIT -> {}
-            default -> throw new IllegalArgumentException("Неверный способ инициализации");
+            case MODE_EMPTY_INIT -> {
+            }
+            default -> throw new IllegalArgumentException(Resources.rb.getString("ILLEGAL_INITIALISE_METHOD"));
         }
     }
 
-    private Storage(){}
+    private Storage() {
+    }
 
-    private void defaultInit(){
+    private void defaultInit() {
         create(new Predator("Волк", 60F));
         create(new Predator("Медведь", 400F));
         create(new Predator("Гиена", 50F));
@@ -54,66 +56,65 @@ public class Storage implements Serializable {
     }
 
     public static Storage getInstance(int initialise) {
-        if(uniqueInstance == null){
-            switch (initialise){
-                case MODE_LOAD_FROM_FILE_INIT ->
-                        {
-                            uniqueInstance = new Storage();
-                            uniqueInstance.load();
-                        }
+        if (uniqueInstance == null) {
+            switch (initialise) {
+                case MODE_LOAD_FROM_FILE_INIT -> {
+                    uniqueInstance = new Storage();
+                    uniqueInstance.load();
+                }
                 case MODE_DEFAULT_INIT, MODE_EMPTY_INIT -> uniqueInstance = new Storage(initialise);
-                default -> throw new IllegalArgumentException("Неверный способ инициализации");
+                default -> throw new IllegalArgumentException(Resources.rb.getString("ILLEGAL_INITIALISE_METHOD"));
             }
         }
         return uniqueInstance;
     }
 
-    public Predator create(Predator predator) {
-        if(predator.getId()!=-1) throw new IllegalStateException("Объект уже имеет id!");
+    public synchronized Predator create(Predator predator) {
+        if (predator.getId() != -1) throw new IllegalStateException(Resources.rb.getString("ALREADY_HAVE_ID"));
         predator.setId(predatorsCounter++);
         predators.put(predator.getId(), predator);
         return predator;
     }
 
-    public Herbivore create(Herbivore herbivore) {
-        if(herbivore.getId()!=-1) throw new IllegalStateException("Объект уже имеет id!");
+    public synchronized Herbivore create(Herbivore herbivore) {
+        if (herbivore.getId() != -1) throw new IllegalStateException(Resources.rb.getString("ALREADY_HAVE_ID"));
         herbivore.setId(herbivoresCounter++);
         herbivores.put(herbivore.getId(), herbivore);
         return herbivore;
     }
 
-    public Grass create(Grass grass) {
-        if(grass.getId()!=-1) throw new IllegalStateException("Объект уже имеет id!");
+    public synchronized Grass create(Grass grass) {
+        if (grass.getId() != -1) throw new IllegalStateException(Resources.rb.getString("ALREADY_HAVE_ID"));
         grass.setId(grassesCounter++);
         grasses.put(grass.getId(), grass);
         return grass;
     }
 
-    public Predator update(Predator predator) {
+    public synchronized Predator update(Predator predator) {
         return predators.replace(predator.getId(), predator);
     }
 
-    public Herbivore update(Herbivore herbivore) {
+    public synchronized Herbivore update(Herbivore herbivore) {
         return herbivores.replace(herbivore.getId(), herbivore);
     }
 
-    public Grass update(Grass grass) {
+    public synchronized Grass update(Grass grass) {
         return grasses.replace(grass.getId(), grass);
     }
 
-    public void remove(Predator predator) {
+    public synchronized void remove(Predator predator) {
         if (predators.remove(predator.getId()) == null)
-            throw new IllegalArgumentException("Нечего удалять!");
+            throw new IllegalArgumentException(Resources.rb.getString("NOTHING_TO_DELETE"));
     }
 
-    public void remove(Herbivore herbivore) {
+    public synchronized void remove(Herbivore herbivore) {
         if (herbivores.remove(herbivore.getId()) == null)
-            throw new IllegalArgumentException("Нечего удалять!");
+            throw new IllegalArgumentException(Resources.rb.getString("NOTHING_TO_DELETE"));
     }
 
-    public void remove(Grass grass) {
+    public synchronized void remove(Grass grass) {
         if (grasses.remove(grass.getId()) == null)
-            throw new IllegalArgumentException("Нечего удалять!");
+            throw new IllegalArgumentException(Resources.rb.getString("NOTHING_TO_DELETE"));
     }
 
     public ArrayList<Animal> getAllAnimals() {
@@ -158,8 +159,7 @@ public class Storage implements Serializable {
     public HashMap<Integer, Animal> getAllAlivePredators() {
         HashMap<Integer, Animal> alivePredators = new HashMap<Integer, Animal>();
         int counterP = 0;
-        for (Predator pr : predators.values())
-        {
+        for (Predator pr : predators.values()) {
             if (pr.isAlive()) alivePredators.put(counterP++, pr);
         }
         return alivePredators;
@@ -180,21 +180,21 @@ public class Storage implements Serializable {
     public String printAllPredators() {
         String pred = "";
         for (Predator pr : predators.values())
-            pred += pr.getInfo() + "\n";
+            pred += pr.getId() + ". " + pr.getShortInfo() + (pr.isAlive() ? "," + Resources.rb.getString("STATUS_ALIVE") : "," + Resources.rb.getString("STATUS_DEAD")) + "\n";
         return pred;
     }
 
     public String printAllHerbivores() {
         String herb = "";
         for (Herbivore h : herbivores.values())
-            herb += h.getInfo() + "\n";
+            herb += h.getId() + ". " + h.getShortInfo() + (h.isAlive() ? "," + Resources.rb.getString("STATUS_ALIVE") : "," + Resources.rb.getString("STATUS_DEAD")) + "\n";
         return herb;
     }
 
     public String printAllGrasses() {
         String grass = "";
         for (Grass g : grasses.values())
-            grass += g.getInfo() + "\n";
+            grass += g.getId() + ". " + g.getShortInfo() + "\n";
         return grass;
     }
 
@@ -206,7 +206,7 @@ public class Storage implements Serializable {
         String alivePredators = "";
         for (Predator pr : predators.values())
             if (pr.isAlive()) {
-                alivePredators += pr.getInfo() + "\n";
+                alivePredators += pr.getId() + ". " + pr.getShortInfo() + (pr.isAlive() ? "," + Resources.rb.getString("STATUS_ALIVE") : "," + Resources.rb.getString("STATUS_DEAD")) + "\n";
             }
         return alivePredators;
     }
@@ -215,29 +215,27 @@ public class Storage implements Serializable {
         String aliveHerbivores = "";
         for (Herbivore hr : herbivores.values())
             if (hr.isAlive()) {
-                aliveHerbivores += hr.getInfo() + "\n";
+                aliveHerbivores += hr.getId() + ". " + hr.getShortInfo() + (hr.isAlive() ? "," + Resources.rb.getString("STATUS_ALIVE") : "," + Resources.rb.getString("STATUS_DEAD")) + "\n";
             }
         return aliveHerbivores;
     }
 
-    public String save(){
-        try{
+    public synchronized String save() {
+        try {
             FileOutputStream dataFile = new FileOutputStream(filenameAnimals);
             ObjectOutputStream saveFile = new ObjectOutputStream(dataFile);
             saveFile.writeObject(uniqueInstance);
             saveFile.close();
             dataFile.close();
-            System.out.println("Данные успешно сохранены в хранилище");
-            return Resources.rb.getString("MESSAGE_SAVE");
-            }
-        catch (IOException ex)
-        {
-            ex.printStackTrace();
-            return "Ошибка сохранения!";
+            System.out.println(Resources.rb.getString("MESSAGE_SAVE"));
+            return Resources.rb.getString("MESSAGE_SAVE") + '\n';
+        } catch (IOException ex) {
+            System.err.println(Resources.rb.getString("MESSAGE_SAVE_ERROR"));
+            return Resources.rb.getString("MESSAGE_SAVE_ERROR") + '\n';
         }
     }
 
-    public void load(){
+    public void load() {
         try {
             FileInputStream dataFile = new FileInputStream(filenameAnimals);
             ObjectInputStream loadFile = new ObjectInputStream(dataFile);
@@ -247,8 +245,6 @@ public class Storage implements Serializable {
             System.out.println(Resources.rb.getString("MESSAGE_LOAD"));
         } catch (IOException | ClassNotFoundException ex) {
             System.err.println(Resources.rb.getString("MESSAGE_LOAD_ERROR"));
-            ex.printStackTrace();
-            System.out.println("Не удалось считать данные из файла. Будет выполнена дефолтная инициализация!");
             defaultInit();
         }
     }

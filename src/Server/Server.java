@@ -1,5 +1,9 @@
 package Server;
 
+import controller.Listener.NetListener;
+import controller.Listener.ServerListener;
+import resources.Resources;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -23,31 +27,23 @@ public class Server implements Runnable {
                 serverThreads.add(serverThread);
                 Thread thread = new Thread(serverThread);
                 thread.start();
+                final String log = "[LOG] ";
+                NetListener.getServerForm().getTextAreaLog().append(log + Resources.rb.getString("MESSAGE_CLIENT_CONNECTED") + socket.getPort() + "\n");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 
-    public void startServer(int port) throws IOException {
-
-
-//        Server server = new Server();
-//        Thread thread = new Thread(server);
-//        thread.start();
-    }
-
-
     public void stopServer() throws IOException {
+        serverSocket.close();
+        isStarted = false;
         for (ServerThread serverThread : serverThreads)
         {
             serverThread.getObjectInputStream().close();
             serverThread.getObjectInputStream().close();
             serverThread.getSocket().close();
         }
-
-        serverSocket.close();
-        isStarted = false;
     }
 
     public boolean isStarted() {

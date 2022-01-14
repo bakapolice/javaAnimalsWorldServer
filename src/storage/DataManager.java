@@ -6,6 +6,7 @@ import model.Grass;
 import model.Herbivore;
 import model.Predator;
 import org.json.JSONObject;
+import resources.Resources;
 
 import java.awt.*;
 import java.util.Scanner;
@@ -20,6 +21,7 @@ public class DataManager {
     public final static int ALL_ALIVE_HERBIVORES = 5;
     public final static int ALL_ALIVE_PREDATORS = 6;
     public final static int ALL_FOOD = 7;
+    private static final String msg = "[MESSAGE] ";
 
     public static void initialise(int initialise) {
         storage = Storage.getInstance(initialise);
@@ -46,32 +48,32 @@ public class DataManager {
         Herbivore herbivore;
         if (form) {
             herbivore = (Herbivore) storage.getAllAliveHerbivores().get(selection);
-            if(herbivore == null) return "Ошибка. Такое животное не найдено!";
+            if(herbivore == null) return msg+ Resources.rb.getString("ERROR_ANIMAL_DIDNT_FIND")+ '\n';
             selection = herbivore.getId();
         }
         herbivore = storage.findHerbivoreById(selection);
         //Убить травоядное
-        if(herbivore == null) return  "Ошибка. Такое животное не найдено!";
+        if(herbivore == null) return  msg + Resources.rb.getString("ERROR_ANIMAL_DIDNT_FIND")+ '\n';
             herbivore.die();
         //Обновить статус в хранилище на "Убит"
-        if(storage.update(herbivore) == null) return  "Ошибка. Не удалось обновить состояние животного в хранилище.!";
-        return "Статус животного обновлен успешно! " + storage.findHerbivoreById(selection).getShortInfo();
+        if(storage.update(herbivore) == null) return  msg + Resources.rb.getString("ERROR_UNABLE_TO_UPDATE_ANIMAL")+ '\n';
+        return msg +Resources.rb.getString("MESSAGE_ANIMAL_UPDATED") + herbivore.getShortInfo() + (herbivore.isAlive() ? "," + Resources.rb.getString("STATUS_ALIVE") : "," + Resources.rb.getString("STATUS_DEAD"))+ '\n';
     }
 
     public static String killPredator(int selection, boolean form) {
         Predator predator;
         if (form) {
             predator = (Predator) storage.getAllAlivePredators().get(selection);
-            if(predator == null) return "Ошибка. Такое животное не найдено!";
+            if(predator == null) return msg + Resources.rb.getString("ERROR_ANIMAL_DIDNT_FIND")+ '\n';
             selection = predator.getId();
         }
         predator = storage.findPredatorById(selection);
-        if(predator == null) return  "Ошибка. Такое животное не найдено!";
+        if(predator == null) return  msg+ Resources.rb.getString("ERROR_ANIMAL_DIDNT_FIND")+ '\n';
         //Убить хищника
         predator.die();
         //Обновить статус в хранилище на "Убит"
-        if(storage.update(predator) == null) return  "Ошибка. Не удалось обновить состояние животного в хранилище.!";
-        return "Статус животного обновлен успешно! " + storage.findPredatorById(selection).getShortInfo();
+        if(storage.update(predator) == null) return  msg + Resources.rb.getString("ERROR_UNABLE_TO_UPDATE_ANIMAL")+ '\n';
+        return msg+ Resources.rb.getString("MESSAGE_ANIMAL_UPDATED") + predator.getShortInfo() + (predator.isAlive() ? "," + Resources.rb.getString("STATUS_ALIVE") : "," + Resources.rb.getString("STATUS_DEAD")) + '\n';
     }
     //---------------------------------------------------------------
 
@@ -80,18 +82,18 @@ public class DataManager {
         Herbivore herbivore;
         if (form) {
             herbivore = (Herbivore) storage.getAllAliveHerbivores().get(selection);
-            if(herbivore == null) return "Ошибка. Такое животное не найдено!";
+            if(herbivore == null) return msg+ Resources.rb.getString("ERROR_ANIMAL_DIDNT_FIND")+ '\n';
             selection = herbivore.getId();
         }
         herbivore = storage.findHerbivoreById(selection);
         Grass grass = storage.findGrassById(foodID);
-        if(grass == null) return "Ошибка! Такая еда не найдена!";
+        if(grass == null) return msg+ Resources.rb.getString("ERROR_UNABLE_TO_FIND_FOOD")+ '\n';
         //Покормить
         herbivore.eat(grass);
         //Обновить данные
-        if(storage.update(herbivore) == null) return "Ошибка. Не удалось обновить состояние животного в хранилище!";
-        if(storage.update(grass) == null) return "Ошибка. Не удалось обновить состояние животного в хранилище!";
-        return "Статус животного обновлен успешно! " + storage.findPredatorById(selection).getShortInfo();
+        if(storage.update(herbivore) == null) return msg+Resources.rb.getString("ERROR_UNABLE_TO_UPDATE_ANIMAL")+ '\n';
+        if(storage.update(grass) == null) return msg+Resources.rb.getString("ERROR_UNABLE_TO_UPDATE_FOOD")+ '\n';
+        return msg + Resources.rb.getString("MESSAGE_ANIMAL_UPDATED") + herbivore.getShortInfo() + '\n' + msg + Resources.rb.getString("MESSAGE_FOOD_UPDATED") + grass.getShortInfo() + '\n';
     }
 
     public static String feedPredator(int selection, int foodID, boolean form) {
@@ -99,28 +101,27 @@ public class DataManager {
         Herbivore herbivore;
         if (form) {
             predator = (Predator) storage.getAllAlivePredators().get(selection);
-            if(predator == null) return "Ошибка. Такой хищник не найден!";
+            if(predator == null) return msg +Resources.rb.getString("ERROR_UNABLE_TO_FIND_PRED")+ '\n';
 
             herbivore = (Herbivore) storage.getAllAliveHerbivores().get(foodID);
-            if(herbivore == null) return "Ошибка. Такое травоядное не найдено!";
+            if(herbivore == null) return msg +Resources.rb.getString("ERROR_UNABLE_TO_FIND_HERB")+ '\n';
 
             selection = predator.getId();
             foodID = herbivore.getId();
         }
         predator = storage.findPredatorById(selection);
-        if(predator == null) return "Ошибка. Такой хищник не найден!";
+        if(predator == null) return msg +Resources.rb.getString("ERROR_UNABLE_TO_FIND_PRED")+ '\n';
 
         herbivore = storage.findHerbivoreById(foodID);
-        if(herbivore == null) return "Ошибка. Такое травоядное не найдено!";
+        if(herbivore == null) return msg +Resources.rb.getString("ERROR_UNABLE_TO_FIND_HERB")+ '\n';
 
         //Покормить
         boolean hunt = predator.eat(herbivore);
         //Обновить данные
-        if(storage.update(predator) == null) return "Ошибка. Не удалось обновить состояние животного в хранилище!";
-        if(storage.update(herbivore) == null) return "Ошибка. Не удалось обновить состояние животного в хранилище!";
+        if(storage.update(predator) == null || storage.update(herbivore) == null) return msg +Resources.rb.getString("ERROR_UNABLE_TO_UPDATE_ANIMAL")+ '\n';
 
-        if(!hunt) return "Хищнику не удалось поймать добычу!";
-        return "Охота прошла успешно! Хищник поймал добычу";
+        if(!hunt) return msg +Resources.rb.getString("UNLUCKY_HUNT")+ '\n';
+        return msg +Resources.rb.getString("LUCKY_HUNT")+ '\n';
     }
     //---------------------------------------------------------------
 
@@ -148,7 +149,7 @@ public class DataManager {
             case ALL_FOOD -> {
                 return storage.printAllGrasses();
             }
-            default -> throw new IllegalArgumentException("Неверный пункт меню!");
+            default -> throw new IllegalArgumentException(Resources.rb.getString("MESSAGE_WRONG_MENU_POINT"));
         }
     }
     //---------------------------------------------------------------
@@ -205,7 +206,7 @@ public class DataManager {
                     data.put(String.valueOf(grass.getId()),grass.getShortInfo());
                 return data;
             }
-            default -> throw new IllegalArgumentException("Неверный пункт меню!");
+            default -> throw new IllegalArgumentException(Resources.rb.getString("MESSAGE_WRONG_MENU_POINT"));
         }
     }
 

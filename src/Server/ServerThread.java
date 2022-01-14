@@ -1,14 +1,14 @@
 package Server;
 
-import controller.NetController;
+import controller.Listener.NetListener;
 import org.json.JSONObject;
+import resources.Resources;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 public class ServerThread implements Runnable {
-    private Socket socket = null;
+    private Socket socket;
     private ObjectOutputStream objectOutputStream;
     private ObjectInputStream objectInputStream;
     String requestFromClient;
@@ -20,21 +20,21 @@ public class ServerThread implements Runnable {
     @Override
     public void run() {
         try {
-            NetController.createJsonResponse(-1, "null");
-            NetController.getResponseFromServer(NetController.getJsonResponse());
-            objectInputStream = new ObjectInputStream(socket.getInputStream());
+            NetListener.createJsonResponse(-1, "null");
+            NetListener.getResponseFromServer(NetListener.getJsonResponse());
             while (socket.isConnected()) {
+                objectInputStream = new ObjectInputStream(socket.getInputStream());
                 requestFromClient = objectInputStream.readObject().toString();
 
-                NetController.getResponseFromServer(new JSONObject(requestFromClient));
+                NetListener.getResponseFromServer(new JSONObject(requestFromClient));
 
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                serverResponse = NetController.getJsonResponse().toString();
+                serverResponse = NetListener.getJsonResponse().toString();
                 objectOutputStream.writeObject(serverResponse);
             }
-            System.out.println("Socket closed");
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            final String log = "[LOG] ";
+            NetListener.getServerForm().getTextAreaLog().append(log + Resources.rb.getString("MESSAGE_CLIENT_DISCONNECTED") + socket.getPort() + "\n");
         }
     }
 

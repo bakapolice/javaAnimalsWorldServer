@@ -23,7 +23,6 @@ public class Resources {
         rb = ResourceBundle.getBundle("ResourceBundle", locale);
     }
 
-    //Метод, задающий настройки, указанные в config.resources
     public static boolean startApp() {
         Properties properties = new Properties();
         try {
@@ -39,7 +38,7 @@ public class Resources {
             initialise = Integer.parseInt(properties.getProperty("storage.load"));
         } catch (IOException ex) {
             ex.printStackTrace();
-            System.err.println("Ошибка! Файл с настройками не найден!");
+            System.err.println("Ошибка! Файл с настройками не найден!\nError! Resources file didn't find!");
             return false;
         }
         return true;

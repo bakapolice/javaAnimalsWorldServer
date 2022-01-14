@@ -1,7 +1,6 @@
 package controller.Listener;
 
-import controller.GeneralController;
-import controller.NetController;
+import resources.Resources;
 import view.ServerForm;
 
 import java.awt.event.ActionEvent;
@@ -16,63 +15,61 @@ public class ServerListener implements ActionListener {
     public ServerListener(ServerForm serverForm) {
         this.serverForm = serverForm;
 
-        this.serverForm.getbExit().addActionListener(this);
-        this.serverForm.getbStop().addActionListener(this);
-        this.serverForm.getbStart().addActionListener(this);
-        this.serverForm.getTfPort().addActionListener(this);
+        this.serverForm.getButtonExit().addActionListener(this);
+        this.serverForm.getButtonStop().addActionListener(this);
+        this.serverForm.getButtonStart().addActionListener(this);
+        this.serverForm.getTextFieldPort().addActionListener(this);
 
         this.serverForm.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                NetController.exitServer();
+                NetListener.exitServer();
                 serverForm.exitServer();
                 System.exit(0);
             }
         });
     }
 
-
-
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        if (e.getSource() == serverForm.getbStart()) {
-            String sPort = serverForm.getTfPort().getText();
+        if (e.getSource() == serverForm.getButtonStart()) {
+            String sPort = serverForm.getTextFieldPort().getText();
             try {
 
                 if (sPort.isBlank()) {
-                    throw new IllegalAccessException("Ошибка. Введите значение порта.");
+                    serverForm.getTextAreaLog().append(Resources.rb.getString("MESSAGE_ERROR_ENTER_PORT") + '\n');
                 }
                 int iPort;
                 try {
                     iPort = Integer.parseInt(sPort);
                 } catch (NumberFormatException ex) {
-                    serverForm.getTfLog().setText(ex.getMessage());
-                    throw new IllegalAccessException("Ошибка преобразования порта.");
+                    serverForm.getTextAreaLog().append(Resources.rb.getString("WRONG_PORT_VALUE") + '\n');
+                    return;
                 }
                 serverForm.startServer();
-                NetController.startServer(iPort);
+                NetListener.startServer(iPort);
             } catch (Exception ex) {
-                serverForm.getTfLog().setText(ex.getMessage());
+                serverForm.getTextAreaLog().append(ex.getMessage());
             }
         }
 
-        if (e.getSource() == serverForm.getbStop()) {
+        if (e.getSource() == serverForm.getButtonStop()) {
             try {
-                NetController.stopServer();
+                NetListener.stopServer();
                 serverForm.stopServer();
-                serverForm.getTfLog().setText("Сервер остановлен.");
+                serverForm.getTextAreaLog().append(Resources.rb.getString("MESSAGE_SERVER_STOPPED")+'\n');
             } catch (NumberFormatException ex) {
-                ex.printStackTrace();
+                serverForm.getTextAreaLog().append(ex.getMessage());
             }
         }
 
-        if (e.getSource() == serverForm.getbExit()) {
+        if (e.getSource() == serverForm.getButtonExit()) {
             try {
-                NetController.exitServer();
+                NetListener.exitServer();
                 serverForm.exitServer();
             } catch (NumberFormatException ex) {
-                serverForm.getTfLog().setText(ex.getMessage());
+                serverForm.getTextAreaLog().append(ex.getMessage());
             }
         }
     }

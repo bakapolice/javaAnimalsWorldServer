@@ -1,16 +1,17 @@
-package controller;
+package controller.Listener;
 
 
 import Server.Server;
-import controller.Listener.ServerListener;
+import controller.GeneralController;
 import model.Grass;
 import model.Herbivore;
 import model.Predator;
 import org.json.JSONObject;
+import resources.Resources;
 import storage.DataManager;
 import view.*;
 
-public class NetController {
+public class NetListener {
 
     private static Server server;
     private static ServerForm serverForm;
@@ -26,37 +27,35 @@ public class NetController {
 
     private static JSONObject jsonRequest;
     private static JSONObject jsonResponse;
+    private static final String msg = "[MESSAGE] ";
 
 
-    public static void startServer(int port) throws Exception {
+    public static void startServer(int port){
         try {
             server = new Server();
             server.setPort(port);
             new Thread(server).start();
+            serverForm.getTextAreaLog().append(Resources.rb.getString("MESSAGE_SERVER_STARED") + port + '\n');
         } catch (Exception ex) {
-            serverForm.getTfLog().setText(ex.getMessage());
-            throw new Exception("Ошибка запуска сервера на порту " + port);
+            serverForm.getTextAreaLog().append(Resources.rb.getString("MESSAGE_UNABLE_TO_START") + port + '\n');
         }
     }
 
-    public static boolean stopServer() {
+    public static void stopServer() {
         try {
             server.stopServer();
-            return true;
         } catch (Exception ex) {
-            serverForm.getTfLog().setText(ex.getMessage());
-            return false;
+            serverForm.getTextAreaLog().append(Resources.rb.getString("MESSAGE_ERROR_STOP_SERVER") + '\n');
         }
     }
 
     public static void exitServer() {
         try {
-            if (server!= null && server.isStarted())
+            if (server != null && server.isStarted())
                 server.stopServer();
             GeneralController.save();
         } catch (Exception ex) {
-            serverForm.getTfLog().setText(ex.getMessage());
-            //serverForm.getTfLog().setText("Сервер не существует или отсутствуют разрешения.");
+            serverForm.getTextAreaLog().append(ex.getMessage());
         }
     }
 
@@ -66,19 +65,9 @@ public class NetController {
             serverListener = new ServerListener(serverForm);
             createJsonResponse(-1, "null");
         } catch (Exception ex) {
-            serverForm.getTfLog().setText(ex.getMessage());
+            ex.printStackTrace();
+            System.err.println(ex.getMessage());
         }
-    }
-
-    private static void createJsonRequest(int command, String type, String name, Float weigh, Integer selectionId, Integer foodId, Boolean isForm) {
-        jsonRequest = new JSONObject();
-        jsonRequest.put("request_type", command);
-        jsonRequest.put("creature_type", type);
-        jsonRequest.put("name", name);
-        jsonRequest.put("weigh", weigh);
-        jsonRequest.put("selection_id", selectionId);
-        jsonRequest.put("food_id", foodId);
-        jsonRequest.put("is_form", isForm);
     }
 
     public static void createJsonResponse(int command, String message) {
@@ -97,27 +86,27 @@ public class NetController {
     // На стороне сервера
     public static void getResponseFromServer(JSONObject jsonRequest) {
         switch (jsonRequest.getInt("request_type")) {
-            case REQUEST_TYPE_CONNECT -> createJsonResponse(REQUEST_TYPE_CONNECT, "Connected");
+            case REQUEST_TYPE_CONNECT -> createJsonResponse(REQUEST_TYPE_CONNECT, msg + "Connected" + '\n');
 
             case REQUEST_TYPE_CREATE -> {
                 String message = null;
                 if (jsonRequest.getString("creature_type").equals("Herbivore")) {
                     Herbivore herbivore = DataManager.createHerbivore(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
                     if (herbivore == null)
-                        message = "Ошибка создания";
-                    else message = "Создан: " + herbivore.getShortInfo();
+                        message = msg + Resources.rb.getString("MESSAGE_ERROR_CREATE") + '\n';
+                    else message = msg +  Resources.rb.getString("MESSAGE_CREATED") + herbivore.getShortInfo()  + '\n';
                 }
                 if (jsonRequest.getString("creature_type").equals("Predator")) {
                     Predator predator = DataManager.createPredator(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
                     if (predator == null)
-                        message = "Ошибка создания!";
-                    else message = "Создан: " + predator.getShortInfo();
+                        message = msg + Resources.rb.getString("MESSAGE_ERROR_CREATE") + '\n';
+                    else message = msg + Resources.rb.getString("MESSAGE_CREATED") + predator.getShortInfo()  + '\n';
                 }
                 if (jsonRequest.getString("creature_type").equals("Grass")) {
                     Grass grass = DataManager.createGrass(jsonRequest.getString("name"), (float) jsonRequest.getDouble("weigh"));
                     if (grass == null)
-                        message = "Ошибка создания";
-                    else message = "Создан: " + grass.getShortInfo();
+                        message = msg + Resources.rb.getString("MESSAGE_ERROR_CREATE") + '\n';
+                    else message = msg + Resources.rb.getString("MESSAGE_CREATED") + grass.getShortInfo()  + '\n';
                 }
                 createJsonResponse(jsonRequest.getInt("request_type"), message);
             }
@@ -156,7 +145,7 @@ public class NetController {
     }
 
     public static void setJsonRequest(JSONObject jsonRequest) {
-        NetController.jsonRequest = jsonRequest;
+        NetListener.jsonRequest = jsonRequest;
     }
 
     public static JSONObject getJsonResponse() {
@@ -164,6 +153,10 @@ public class NetController {
     }
 
     public static void setJsonResponse(JSONObject jsonResponse) {
-        NetController.jsonResponse = jsonResponse;
+        NetListener.jsonResponse = jsonResponse;
+    }
+
+    public static ServerForm getServerForm() {
+        return serverForm;
     }
 }

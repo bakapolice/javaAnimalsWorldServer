@@ -1,75 +1,69 @@
 package view;
 
+import resources.Resources;
+
 import java.awt.*;
 
 public class ServerForm extends Frame {
 
-    private Button bStart;
-    private Button bStop;
-    private Button bExit;
-    private Label lPort;
-    private TextField tfPort;
-    private Label lLog;
-    private TextField tfLog;
+    private Button buttonStart;
+    private Button buttonStop;
+    private Button buttonExit;
+    private Label labelPort;
+    private TextField textFieldPort;
+    private Label labelLog;
+    private TextArea textAreaLog;
 
     public ServerForm() {
-
-        this.setSize(400, 300);
-        setLayout(new GridLayout(3, 1));
-
-
-        Panel portPanel = new Panel(new FlowLayout(FlowLayout.LEFT, 30, 30));
-        lPort = new Label("Порт:");
-        portPanel.add(lPort);
-        tfPort = new TextField("5050", 20);
-        tfPort.setEnabled(true);
-        portPanel.add(tfPort);
-        this.add(portPanel);
-        portPanel.setBackground(new Color(240, 240, 240));
+        labelPort = new Label(Resources.rb.getString("LABEL_PORT"));
+        labelPort.setBounds(30, 61, 85, 30);
+        this.add(labelPort);
+        textFieldPort = new TextField("5050");
+        textFieldPort.setBounds(157,61, 213, 30);
+        textFieldPort.setEnabled(true);
+        this.add(textFieldPort);
 
 
-        Panel buttonPanel = new Panel(new FlowLayout(FlowLayout.CENTER, 70, 20));
-        bStart = new Button("Старт");
-        bStart.setEnabled(true);
-        buttonPanel.add(bStart);
+        buttonStart = new Button(Resources.rb.getString("BUTTON_START"));
+        buttonStart.setBounds(30,121, 85,30);
+        buttonStart.setEnabled(true);
+        this.add(buttonStart);
 
-        bStop = new Button("Стоп");
-        bStop.setEnabled(false);
-        buttonPanel.add(bStop);
+        buttonStop = new Button(Resources.rb.getString("BUTTON_STOP"));
+        buttonStop.setBounds(157,121, 85,30);
+        buttonStop.setEnabled(false);
+        this.add(buttonStop);
 
-        bExit = new Button("Выход");
-        bExit.setEnabled(true);
-        buttonPanel.add(bExit);
-        this.add(buttonPanel);
-        buttonPanel.setBackground(new Color(240, 240, 240));
+        buttonExit = new Button(Resources.rb.getString("BUTTON_EXIT"));
+        buttonExit.setBounds(285,121, 85,30);
+        buttonExit.setEnabled(true);
+        this.add(buttonExit);
 
+        labelLog = new Label(Resources.rb.getString("LABEL_LOG"));
+        labelLog.setBounds(30,181, 85, 30);
+        this.add(labelLog);
+        textAreaLog = new TextArea(null, 10, 40, TextArea.SCROLLBARS_VERTICAL_ONLY);
+        textAreaLog.setBounds(30,231,340, 270);
+        this.add(textAreaLog);
 
-        Panel logPanel = new Panel(new FlowLayout(FlowLayout.LEFT, 30, 10));
-        lLog = new Label("Лог:");
-        logPanel.add(lLog);
-        tfLog=new TextField(40);
-        logPanel.add(tfLog);
-        this.add(logPanel);
-        logPanel.setBackground(new Color(220, 220, 220));
-
-
+        this.setLayout(null);
+        this.setSize(400, 531);
         this.setLocationRelativeTo(null); //поставит форму в центр экрана после размещения компонентов
-
         this.setVisible(true);
     }
 
     public void startServer() {
-        bStart.setEnabled(false);
-        bStop.setEnabled(true);
-        bExit.setEnabled(false);
-        tfPort.setEnabled(false);
+        buttonStart.setEnabled(false);
+        buttonStop.setEnabled(true);
+        buttonExit.setEnabled(false);
+        textFieldPort.setEnabled(false);
     }
 
     public void stopServer() {
-        bStart.setEnabled(true);
-        bStop.setEnabled(false);
-        bExit.setEnabled(true);
-        tfPort.setEnabled(true);
+        buttonStart.setEnabled(true);
+        buttonStop.setEnabled(false);
+        buttonExit.setEnabled(true);
+        textFieldPort.setEnabled(true);
     }
 
     public void exitServer() {
@@ -77,59 +71,59 @@ public class ServerForm extends Frame {
     }
 
 
-    public TextField getTfPort() {
-        return tfPort;
+    public TextField getTextFieldPort() {
+        return textFieldPort;
     }
 
-    public void setTfPort(TextField tfPort) {
-        this.tfPort = tfPort;
+    public void setTextFieldPort(TextField textFieldPort) {
+        this.textFieldPort = textFieldPort;
     }
 
-    public Label getlPort() {
-        return lPort;
+    public Label getLabelPort() {
+        return labelPort;
     }
 
-    public void setlPort(Label lPort) {
-        this.lPort = lPort;
+    public void setLabelPort(Label labelPort) {
+        this.labelPort = labelPort;
     }
 
-    public Label getlLog() {
-        return lLog;
+    public Label getLabelLog() {
+        return labelLog;
     }
 
-    public void setlLog(Label lLog) {
-        this.lLog = lLog;
+    public void setLabelLog(Label labelLog) {
+        this.labelLog = labelLog;
     }
 
-    public Button getbStart() {
-        return bStart;
+    public Button getButtonStart() {
+        return buttonStart;
     }
 
-    public void setbStart(Button bStrat) {
-        this.bStart= bStart;
+    public void setButtonStart(Button buttonStart) {
+        this.buttonStart= buttonStart;
     }
 
-    public Button getbStop() {
-        return bStop;
+    public Button getButtonStop() {
+        return buttonStop;
     }
 
-    public void setbStop(Button bStop) {
-        this.bStop = bStop;
+    public void setButtonExit(Button buttonStop) {
+        this.buttonStop = buttonStop;
     }
 
-    public Button getbExit() {
-        return bExit;
+    public Button getButtonExit() {
+        return buttonExit;
     }
 
-    public void setbExit(Button bExit) {
-        this.bExit = bExit;
+    public void setButtonStop(Button buttonExit) {
+        this.buttonExit = buttonExit;
     }
 
-    public TextField getTfLog() {
-        return tfLog;
+    public TextArea getTextAreaLog() {
+        return textAreaLog;
     }
 
-    public void setTfLog(TextField tfLog) {
-        this.tfLog = tfLog;
+    public void setTextAreaLog(TextArea textAreaLog) {
+        this.textAreaLog = textAreaLog;
     }
 }
